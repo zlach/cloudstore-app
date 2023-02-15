@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { createPost, getReplies, editPost, deletePost } from '../api-mock'
 import { testUser } from '../constants'
-import db from '../db-mock'
 import PostForm from './forms/Post'
 
 function Post({ post, handleEdit, handleDelete, handleDeleteReply = null }) {
