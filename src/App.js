@@ -2,9 +2,11 @@ import Home from './pages/home'
 
 function App() {
   return (
-    <main>
+    <main className="container">
       <h1>Tech Assessment - Goldberg</h1>
-      <Home />
+      <div className="d-flex justify-content-center">
+        <Home />
+      </div>
     </main>
   )
 }

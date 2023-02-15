@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function PostForm({ onSubmit }) {
+function PostForm({ onSubmit, buttonText = 'submit' }) {
   const [body, setBody] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -18,9 +18,9 @@ function PostForm({ onSubmit }) {
 
   return (
     <form className="post-form" onSubmit={handleSubmit}>
-      <textarea rows={4} onChange={e => setBody(e.target.value)} value={body} />
-      <button type="submit" disabled={isSubmitting || !body}>
-        Post
+      <textarea className="d-block form-control" rows={2} onChange={e => setBody(e.target.value)} value={body} />
+      <button className="btn btn-secondary w-100" type="submit" disabled={isSubmitting || !body}>
+        {buttonText}
       </button>
     </form>
   )

@@ -1,14 +1,14 @@
 import mockAsync from '../utils/mock-async'
 import db from '../db-mock'
 
-function getPosts(parent = null) {
-  return mockAsync(db)
+function getReplies(id) {
+  return mockAsync(db.filter(post => post.parentId === id))
 }
 
 function createPost(post) {
-  db.push(post)
+  db.unshift(post)
 
-  return post
+  return mockAsync(post)
 }
 
-export { getPosts, createPost }
+export { getReplies, createPost }

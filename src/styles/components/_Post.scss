@@ -1,0 +1,10 @@
+.post-component {
+  margin-left: auto;
+  width: calc(100% - 100px);
+  min-width: 200px;
+
+  .card-link, .custom-link {
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+}
