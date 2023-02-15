@@ -13,9 +13,8 @@ function Post({ post, parentId }) {
 
   useEffect(() => {
     async function fetchReplies() {
-      console.log('ran', post.id)
       const res = await getReplies(post.id)
-      console.log('res', res, post.id, db)
+
       setReplies(res)
     }
 
