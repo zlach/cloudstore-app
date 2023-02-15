@@ -3,9 +3,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { createPost, getReplies, editPost, deletePost } from '../api-mock'
 import { testUser } from '../constants'
+import db from '../db-mock'
 import PostForm from './forms/Post'
 
-function Post({ post, handleEdit, handleDelete }) {
+function Post({ post, handleEdit, handleDelete, handleDeleteReply = null }) {
   const [replies, setReplies] = useState([])
   const [replyMode, setReplyMode] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -36,11 +37,11 @@ function Post({ post, handleEdit, handleDelete }) {
     setShowReplies(true)
   }
 
-  const handleEditPost = async body => {
-    if (post.parentId === null) {
-      await handleEdit(post.id, body)
+  const handleEditPost = async (p, body) => {
+    if (p.parentId === null) {
+      await handleEdit(p.id, body)
     } else {
-      const res = await editPost(post.id, body)
+      const res = await editPost(p.id, body)
 
       const editedReplies = replies.map(r => {
         if (r.id === res.id) {
@@ -57,16 +58,16 @@ function Post({ post, handleEdit, handleDelete }) {
     setEditMode(false)
   }
 
-  const handleDeletePost = async () => {
-    if (post.parentId === null) {
-      await handleDelete(post.id)
+  const handleDeletePost = async p => {
+    if (p.parentId === null) {
+      await handleDelete(p.id)
     } else {
       let filteredReplies = replies
 
-      const res = await deletePost(post.id)
+      const res = await deletePost(p.id)
 
       if (res) {
-        filteredReplies = replies.filter(r => r.id !== post.id)
+        filteredReplies = replies.filter(r => r.id !== p.id)
       }
 
       setReplies(filteredReplies)
@@ -81,7 +82,7 @@ function Post({ post, handleEdit, handleDelete }) {
         <div className="cardBody">
           <h2 className="card-title">{post.user}</h2>
           {editMode ? (
-            <PostForm onSubmit={handleEditPost} buttonText="Edit" defaultValue={post.body} />
+            <PostForm onSubmit={body => handleEditPost(post, body)} buttonText="Edit" defaultValue={post.body} />
           ) : (
             <p className="card-text">{post.body}</p>
           )}
@@ -112,7 +113,16 @@ function Post({ post, handleEdit, handleDelete }) {
           {deleteMode && (
             <>
               <span className="delete-confirm">Delete?</span>
-              <div className="card-link d-inline link-primary" onClick={handleDeletePost}>
+              <div
+                className="card-link d-inline link-primary"
+                onClick={() => {
+                  if (handleDeleteReply !== null) {
+                    handleDeleteReply(post)
+                  } else {
+                    handleDeletePost(post)
+                  }
+                }}
+              >
                 Yes
               </div>
               <div className="card-link d-inline link-primary" onClick={() => setDeleteMode(false)}>
@@ -133,7 +143,7 @@ function Post({ post, handleEdit, handleDelete }) {
           <div className="custom-link text-end link-primary" onClick={() => setShowReplies(false)}>
             Hide Replies
           </div>
-          {!!replies.length && replies.map(r => <Post handleDelete={handleDeletePost} key={r.id} post={r} />)}
+          {!!replies.length && replies.map(r => <Post handleDeleteReply={handleDeletePost} key={r.id} post={r} />)}
         </div>
       )}
     </div>
