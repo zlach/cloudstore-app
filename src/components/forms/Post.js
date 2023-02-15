@@ -14,7 +14,7 @@ function PostForm({ onSubmit, buttonText = 'submit', defaultValue = '' }) {
 
     setIsSubmitting(true)
 
-    await onSubmit({ body })
+    await onSubmit(body)
 
     setBody('')
 
@@ -23,13 +23,7 @@ function PostForm({ onSubmit, buttonText = 'submit', defaultValue = '' }) {
 
   return (
     <form className="post-form" onSubmit={handleSubmit}>
-      <textarea
-        className="d-block form-control"
-        rows={2}
-        defaultValue={defaultValue}
-        onChange={e => setBody(e.target.value)}
-        value={body}
-      />
+      <textarea className="d-block form-control" rows={2} onChange={e => setBody(e.target.value)} value={body} />
       <button className="btn btn-secondary w-100" type="submit" disabled={isSubmitting || !body}>
         {buttonText}
       </button>

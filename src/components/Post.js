@@ -5,7 +5,7 @@ import { createPost, getReplies, editPost } from '../api-mock'
 import { testUser } from '../constants'
 import PostForm from './forms/Post'
 
-function Post({ post }) {
+function Post({ post, handleEdit }) {
   const [replies, setReplies] = useState([])
   const [replyMode, setReplyMode] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -22,7 +22,7 @@ function Post({ post }) {
     fetchReplies()
   }, [post])
 
-  const handleCreateReply = async ({ body }) => {
+  const handleCreateReply = async body => {
     const p = await createPost({
       id: uuidv4(),
       parentId: post.id,
@@ -36,7 +36,26 @@ function Post({ post }) {
     setShowReplies(true)
   }
 
-  // const handleEditPost =
+  const handleEditPost = async body => {
+    if (post.parentId === null) {
+      await handleEdit(post.id, body)
+    } else {
+      const res = await editPost(post.id, body)
+
+      const editedReplies = replies.map(r => {
+        if (r.id === res.id) {
+          r.body = res.body
+          return r
+        } else {
+          return r
+        }
+      })
+
+      setReplies(editedReplies)
+    }
+
+    setEditMode(false)
+  }
 
   return (
     <div className="post-component my-2">
@@ -44,7 +63,7 @@ function Post({ post }) {
         <div className="cardBody">
           <h2 className="card-title">{post.user}</h2>
           {editMode ? (
-            <PostForm onSubmit={null} buttonText="Edit" defaultValue={post.body} />
+            <PostForm onSubmit={handleEditPost} buttonText="Edit" defaultValue={post.body} />
           ) : (
             <p className="card-text">{post.body}</p>
           )}
