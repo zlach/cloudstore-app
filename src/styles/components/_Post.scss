@@ -3,6 +3,11 @@
   width: calc(100% - 100px);
   min-width: 200px;
 
+  .delete-confirm {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+  }
+
   .card-link, .custom-link {
     font-size: 1.2rem;
     cursor: pointer;

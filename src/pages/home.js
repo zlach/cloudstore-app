@@ -8,13 +8,13 @@ import Post from '../components/Post'
 function Home() {
   const [posts, setPosts] = useState([])
 
-  const createNewPost = async ({ body }) => {
+  const handleCreatePost = async ({ body }) => {
     const post = await createPost({
       id: uuidv4(),
       parentId: null,
       user: testUser,
       body: body,
-      timeStamp: Date.now(),
+      createdAt: new Date.now().toISOString(),
     })
 
     setPosts(prevPosts => [post, ...prevPosts])
@@ -22,8 +22,8 @@ function Home() {
 
   return (
     <div className="home-page w-75">
-      <PostForm onSubmit={createNewPost} buttonText="Post" />
-      {!!posts.length && posts.map(post => <Post key={post.id} parentId={null} post={post} />)}
+      <PostForm onSubmit={handleCreatePost} buttonText="Post" />
+      {!!posts.length && posts.map(post => <Post key={post.id} post={post} />)}
     </div>
   )
 }

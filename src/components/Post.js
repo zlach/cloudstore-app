@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { createPost, getReplies } from '../api-mock'
+import { createPost, getReplies, editPost } from '../api-mock'
 import { testUser } from '../constants'
-import db from '../db-mock'
 import PostForm from './forms/Post'
 
-function Post({ post, parentId }) {
+function Post({ post }) {
   const [replies, setReplies] = useState([])
   const [replyMode, setReplyMode] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [deleteMode, setDeleteMode] = useState(false)
   const [showReplies, setShowReplies] = useState(false)
 
   useEffect(() => {
@@ -21,7 +22,7 @@ function Post({ post, parentId }) {
     fetchReplies()
   }, [post])
 
-  const createReply = async ({ body }) => {
+  const handleCreateReply = async ({ body }) => {
     const p = await createPost({
       id: uuidv4(),
       parentId: post.id,
@@ -35,20 +36,56 @@ function Post({ post, parentId }) {
     setShowReplies(true)
   }
 
+  // const handleEditPost =
+
   return (
     <div className="post-component my-2">
       <div className="card p-2 bg-light">
         <div className="cardBody">
           <h2 className="card-title">{post.user}</h2>
-          <p className="card-text">{post.body}</p>
-          <div className="card-link d-inline link-primary" onClick={() => setReplyMode(true)}>
-            Reply
-          </div>
-          <div className="card-link d-inline link-primary">Edit</div>
-          <div className="card-link d-inline link-primary">Delete</div>
+          {editMode ? (
+            <PostForm onSubmit={null} buttonText="Edit" defaultValue={post.body} />
+          ) : (
+            <p className="card-text">{post.body}</p>
+          )}
+          {!editMode && !deleteMode && !replyMode && (
+            <>
+              <div className="card-link d-inline link-primary" onClick={() => setReplyMode(true)}>
+                Reply
+              </div>
+              <div className="card-link d-inline link-primary" onClick={() => setEditMode(true)}>
+                Edit
+              </div>
+              <div className="card-link d-inline link-primary" onClick={() => setDeleteMode(true)}>
+                Delete
+              </div>
+            </>
+          )}
+          {(editMode || replyMode) && (
+            <div
+              className="card-link d-inline link-primary"
+              onClick={() => {
+                setEditMode(false)
+                setReplyMode(false)
+              }}
+            >
+              Cancel
+            </div>
+          )}
+          {deleteMode && (
+            <>
+              <span className="delete-confirm">Delete?</span>
+              <div className="card-link d-inline link-primary" onClick={null}>
+                Yes
+              </div>
+              <div className="card-link d-inline link-primary" onClick={() => setDeleteMode(false)}>
+                No
+              </div>
+            </>
+          )}
         </div>
       </div>
-      {replyMode && <PostForm onSubmit={createReply} buttonText={`Reply to ${testUser}`} />}
+      {replyMode && <PostForm onSubmit={handleCreateReply} buttonText={`Reply to ${testUser}`} />}
       {!!replies.length && !showReplies && (
         <div className="custom-link text-end link-primary" onClick={() => setShowReplies(true)}>
           View {replies.length} Replies
@@ -59,7 +96,7 @@ function Post({ post, parentId }) {
           <div className="custom-link text-end link-primary" onClick={() => setShowReplies(false)}>
             Hide Replies
           </div>
-          {!!replies.length && replies.map(r => <Post key={r.id} parentId={post.id} post={r} />)}
+          {!!replies.length && replies.map(r => <Post key={r.id} post={r} />)}
         </div>
       )}
     </div>
