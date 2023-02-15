@@ -57,15 +57,16 @@ function Post({ post, handleEdit, handleDelete }) {
     setEditMode(false)
   }
 
-  const handleDeletePost = async id => {
+  const handleDeletePost = async () => {
     if (post.parentId === null) {
       await handleDelete(post.id)
     } else {
       let filteredReplies = replies
+
       const res = await deletePost(post.id)
 
       if (res) {
-        filteredReplies = replies.filter(r => r.id !== id)
+        filteredReplies = replies.filter(r => r.id !== post.id)
       }
 
       setReplies(filteredReplies)
@@ -132,7 +133,7 @@ function Post({ post, handleEdit, handleDelete }) {
           <div className="custom-link text-end link-primary" onClick={() => setShowReplies(false)}>
             Hide Replies
           </div>
-          {!!replies.length && replies.map(r => <Post key={r.id} post={r} />)}
+          {!!replies.length && replies.map(r => <Post handleDelete={handleDeletePost} key={r.id} post={r} />)}
         </div>
       )}
     </div>

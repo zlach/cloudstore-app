@@ -13,10 +13,21 @@ function editPost(id, body) {
   return mockAsync(db[i])
 }
 
-function deletePost(id) {
-  const i = db.findIndex(p => p.id === id)
+function deletePostRecursive(id) {
+  const i = db.findIndex(p => p.parentId === id)
 
-  return mockAsync(db.splice(i, 1))
+  if (i > -1) {
+    deletePostRecursive(db[i].id)
+  }
+
+  const index = db.findIndex(p => p.id === id)
+  return db.splice(index, 1)
+}
+
+function deletePost(id) {
+  const deleted = deletePostRecursive(id)
+
+  return mockAsync(deleted)
 }
 
 function createPost(post) {
