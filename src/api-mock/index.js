@@ -7,9 +7,16 @@ function getReplies(id) {
 
 function editPost(id, body) {
   const i = db.findIndex(p => p.id === id)
+
   db[i].body = body
 
   return mockAsync(db[i])
+}
+
+function deletePost(id) {
+  const i = db.findIndex(p => p.id === id)
+
+  return mockAsync(db.splice(i, 1))
 }
 
 function createPost(post) {
@@ -18,4 +25,4 @@ function createPost(post) {
   return mockAsync(post)
 }
 
-export { getReplies, createPost, editPost }
+export { getReplies, createPost, editPost, deletePost }

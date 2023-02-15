@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { createPost, getReplies, editPost } from '../api-mock'
+import { createPost, getReplies, editPost, deletePost } from '../api-mock'
 import { testUser } from '../constants'
 import PostForm from './forms/Post'
 
-function Post({ post, handleEdit }) {
+function Post({ post, handleEdit, handleDelete }) {
   const [replies, setReplies] = useState([])
   const [replyMode, setReplyMode] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -57,6 +57,23 @@ function Post({ post, handleEdit }) {
     setEditMode(false)
   }
 
+  const handleDeletePost = async id => {
+    if (post.parentId === null) {
+      await handleDelete(post.id)
+    } else {
+      let filteredReplies = replies
+      const res = await deletePost(post.id)
+
+      if (res) {
+        filteredReplies = replies.filter(r => r.id !== id)
+      }
+
+      setReplies(filteredReplies)
+    }
+
+    setDeleteMode(false)
+  }
+
   return (
     <div className="post-component my-2">
       <div className="card p-2 bg-light">
@@ -94,7 +111,7 @@ function Post({ post, handleEdit }) {
           {deleteMode && (
             <>
               <span className="delete-confirm">Delete?</span>
-              <div className="card-link d-inline link-primary" onClick={null}>
+              <div className="card-link d-inline link-primary" onClick={handleDeletePost}>
                 Yes
               </div>
               <div className="card-link d-inline link-primary" onClick={() => setDeleteMode(false)}>
